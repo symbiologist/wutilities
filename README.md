@@ -1,2 +1,2 @@
-# rpackage
-Template for R packages
+# wutilities
+Utility functions and themes for data analysis, including scRNA-seq

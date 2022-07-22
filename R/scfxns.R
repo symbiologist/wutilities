@@ -38,7 +38,7 @@ seurat_statsplot <- function(seurat_obj,
                              ...){
   
   df <- Seurat::FetchData(seurat_obj, vars = c(x, y), cells = cells, ...)
-i  
+  
   x_min <- min(df[,x])
   x_max <- max(df[,x])
   x_med <- median(df[,x])
