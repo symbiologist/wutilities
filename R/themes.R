@@ -1,8 +1,18 @@
+#' Theme for publication
+#'
+#' @param base_size 
+#' @param base_family 
+#' @param axis 
+#' @param grid 
+#' @param legend 
+#'
+#' @export
+#'
 theme_publication <- function(base_size = 12, 
                               base_family = 'Arial', 
                               axis = T, 
                               grid = F, 
-                              legend = F) {
+                              legend.position = 'none') {
   
   if(axis) {
     axis_element <- element_line(color = 'black')
@@ -14,12 +24,6 @@ theme_publication <- function(base_size = 12,
     grid_element <- element_line(color = 'grey90')
   } else {
     grid_element <- element_blank()
-  }
-  
-  if(legend) {
-    legend_position = 'right'
-  } else {
-    legend_position = 'none'
   }
   
   ggthemes::theme_foundation(base_size = base_size, base_family = base_family) + 
@@ -40,7 +44,7 @@ theme_publication <- function(base_size = 12,
           legend.background = element_rect(fill = NA),
           legend.spacing = unit(0, "cm"),
           legend.title = element_blank(), #element_text(face="italic"),
-          legend.position = legend_position,
+          legend.position = legend.position,
           strip.background = element_rect(color="#f0f0f0",fill="#f0f0f0"),
           strip.text = element_text(face="bold"))
 }
