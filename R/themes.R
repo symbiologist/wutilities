@@ -1,5 +1,3 @@
-library(ggthemes) # themes
-
 theme_publication <- function(base_size = 12, 
                               base_family = 'Arial', 
                               axis = T, 
@@ -24,7 +22,7 @@ theme_publication <- function(base_size = 12,
     legend_position = 'none'
   }
   
-  theme_foundation(base_size = base_size, base_family = base_family) + 
+  ggthemes::theme_foundation(base_size = base_size, base_family = base_family) + 
     theme(plot.title = element_text(face = "plain", size = 14, hjust = 0.5),
           text = element_text(),
           panel.background = element_rect(color = NA),
