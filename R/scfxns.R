@@ -330,7 +330,15 @@ seurat_feature <- function(seurat_obj,
                   color = value)) +
     geom_point(size = size, 
                alpha = alpha) +
-    facet_wrap(reformulate(facets), nrow = nrow)
+    facet_wrap(reformulate(facets), nrow = nrow) +
+    theme_minimal() +
+    labs(x = xlabel,
+         y = ylabel) +
+    theme(plot.background = element_rect(fill = 'white', color = NA),
+          panel.grid = element_blank(),
+          axis.text = element_blank(),
+          legend.title = element_blank(),
+          legend.text = element_text(size = legend_size)) 
   
   if(!continuous & label) {
     centers <- plot_input %>% dplyr::group_by(value) %>% dplyr::summarize(x = median(dim1), y = median(dim2))
@@ -372,15 +380,6 @@ seurat_feature <- function(seurat_obj,
   if(!is.null(title)) {
     p <- p + ggtitle(title)
   }
-  
-  p <- p + theme_minimal() +
-    labs(x = xlabel,
-         y = ylabel) +
-    theme(plot.background = element_rect(fill = 'white', color = NA),
-          panel.grid = element_blank(),
-          axis.text = element_blank(),
-          legend.title = element_blank(),
-          legend.text = element_text(size = legend_size)) 
   
   if(!facet_hide) {
     p <- p + theme(strip.text = element_text(color = facet_color, size = facet_size),
