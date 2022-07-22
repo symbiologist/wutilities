@@ -142,12 +142,13 @@ seurat_statsplot <- function(seurat_obj,
 #' @param facet_background 
 #' @param facet_color 
 #' @param facet_size 
+#' @param facet_hide
 #' @param verbose 
 #'
 #' @export
 #' @import tidyverse
 seurat_feature <- function(seurat_obj, 
-                           features = 'identity', 
+                           features = 'seurat_clusters', 
                            cells = NULL,
                            facets = NULL,
                            nrow = NULL,
@@ -172,6 +173,7 @@ seurat_feature <- function(seurat_obj,
                            facet_background = 'dodgerblue4',
                            facet_color = 'white',
                            facet_size = 10,
+                           facet_hide = FALSE,
                            verbose = TRUE) {
   
   # coordinates
@@ -284,7 +286,6 @@ seurat_feature <- function(seurat_obj,
     } 
   }
   
-  
   # Styling
   if (reduction == 'pca') {
     xlabel <- paste0('PC', dims[1])
@@ -329,17 +330,7 @@ seurat_feature <- function(seurat_obj,
                   color = value)) +
     geom_point(size = size, 
                alpha = alpha) +
-    facet_wrap(reformulate(facets), nrow = nrow) +
-    labs(x = xlabel,
-         y = ylabel) +
-    theme_minimal() +
-    theme(plot.background = element_rect(fill = 'white', color = NA),
-          panel.grid = element_blank(),
-          axis.text = element_blank(),
-          strip.text = element_text(color = facet_color, size = facet_size),
-          strip.background = element_rect(color = 'black', fill = facet_background),
-          legend.title = element_blank(),
-          legend.text = element_text(size = legend_size)) 
+    facet_wrap(reformulate(facets), nrow = nrow)
   
   if(!continuous & label) {
     centers <- plot_input %>% dplyr::group_by(value) %>% dplyr::summarize(x = median(dim1), y = median(dim2))
@@ -380,6 +371,24 @@ seurat_feature <- function(seurat_obj,
   
   if(!is.null(title)) {
     p <- p + ggtitle(title)
+  }
+  
+  p <- p + theme_minimal() +
+    labs(x = xlabel,
+         y = ylabel) +
+    theme(plot.background = element_rect(fill = 'white', color = NA),
+          panel.grid = element_blank(),
+          axis.text = element_blank(),
+          legend.title = element_blank(),
+          legend.text = element_text(size = legend_size)) 
+  
+  if(!facet_hide) {
+    p <- p + theme(strip.text = element_text(color = facet_color, size = facet_size),
+                   strip.background = element_rect(color = 'black', fill = facet_background))
+  } else {
+    p <- p + theme(strip.text = element_blank(),
+                   strip.background = element_blank())
+    
   }
   
   p
