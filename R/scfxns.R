@@ -75,9 +75,10 @@ seurat_statsplot <- function(seurat_obj,
     geom_point(alpha = alpha, color = 'dodgerblue4', size = size) + 
     xlab(x) + 
     ylab(y) + 
-    theme_publication(axis = TRUE,
-                      grid = FALSE, 
-                      legend = FALSE)
+    theme_dwu(axis = TRUE,
+              grid = FALSE,
+              border = TRUE,
+              legend.position = 'none')
   
   
   
