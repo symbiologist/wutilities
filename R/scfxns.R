@@ -1,6 +1,6 @@
 #' Statsplot
 #'
-#' @param seurat_obj 
+#' @param seuratobj 
 #' @param x 
 #' @param y 
 #' @param marginal.type 
@@ -20,24 +20,26 @@
 #' @export
 #' @import tidyverse
 #'
-seurat_statsplot <- function(seurat_obj, 
+seurat_statsplot <- function(seuratobj, 
                              x = 'nCount_RNA', 
                              y = 'nFeature_RNA', 
                              marginal.type = 'density', 
                              size = 0.5, 
                              alpha = 0.05,
-                             title = seurat_obj@project.name, 
+                             title = seuratobj@project.name, 
                              cells = NULL, 
                              logx = FALSE, 
                              logy = FALSE, 
                              vline = NULL, 
                              hline = NULL, 
+                             xlab = NULL,
+                             ylab = NULL,
                              median_lines = FALSE,
                              xlim = 'auto', 
                              ylim = 'auto',
                              ...){
   
-  df <- Seurat::FetchData(seurat_obj, vars = c(x, y), cells = cells, ...)
+  df <- Seurat::FetchData(seuratobj, vars = c(x, y), cells = cells, ...)
   
   x_min <- min(df[,x])
   x_max <- max(df[,x])
@@ -110,13 +112,20 @@ seurat_statsplot <- function(seurat_obj,
     p <- p + ggtitle(title)
   }
   
+  if(!is.null(xlab)) {
+    p <- p + xlab(xlab)
+  }
+  if(!is.null(ylab)) {
+    p <- p + ylab(ylab)
+  }
+  
   ggExtra::ggMarginal(p, type = marginal.type, margins = "both", size = 4, fill = c('#D55E00'))
   
 }
 
 #' Feature plot
 #'
-#' @param seurat_obj 
+#' @param seuratobj 
 #' @param features 
 #' @param cells 
 #' @param facets 
@@ -147,7 +156,7 @@ seurat_statsplot <- function(seurat_obj,
 #'
 #' @export
 #' @import tidyverse
-seurat_feature <- function(seurat_obj, 
+seurat_feature <- function(seuratobj, 
                            features = 'seurat_clusters', 
                            cells = NULL,
                            facets = NULL,
@@ -177,11 +186,11 @@ seurat_feature <- function(seurat_obj,
                            verbose = TRUE) {
   
   # coordinates
-  plot_input <- Seurat::Embeddings(seurat_obj, reduction = reduction)[,dims] %>% as.data.frame() %>% rownames_to_column() %>% as_tibble()
+  plot_input <- Seurat::Embeddings(seuratobj, reduction = reduction)[,dims] %>% as.data.frame() %>% rownames_to_column() %>% as_tibble()
   colnames(plot_input) <- c('rowname', 'dim1', 'dim2')
   
   # Obtain features and facets
-  fetched_table <- Seurat::FetchData(object = seurat_obj, 
+  fetched_table <- Seurat::FetchData(object = seuratobj, 
                                      vars = c(features, setdiff(facets, 'auto')),
                                      cells = cells) 
   
@@ -311,7 +320,7 @@ seurat_feature <- function(seurat_obj,
     facets <- 'feature'
   }
   
-  n_cells <- ncol(seurat_obj)
+  n_cells <- ncol(seuratobj)
   
   if(alpha == 'auto') {
     alpha <- 30/sqrt(n_cells)
