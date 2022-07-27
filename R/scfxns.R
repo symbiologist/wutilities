@@ -82,8 +82,6 @@ seurat_statsplot <- function(seuratobj,
               border = TRUE,
               legend.position = 'none')
   
-  
-  
   if(logx) {
     p <- p + scale_x_log10(limits = xlim)
   } else {
