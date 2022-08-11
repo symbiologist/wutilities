@@ -399,3 +399,288 @@ seurat_feature <- function(seuratobj,
   
   p
 }
+
+#' Calculate density
+#'
+#' @param coordinates 
+#' @param x 
+#' @param y 
+#' @param xlims 
+#' @param ylims 
+#' @param bins 
+#' @param bw 
+#' @param custom 
+#' @param rel_threshold 
+#' @param abs_threshold 
+#'
+#' @export
+#'
+density_calculate <- function(coordinates,
+                              x = 'UMAP_1',
+                              y = 'UMAP_2',
+                              xlims = range(coordinates[[x]]), 
+                              ylims = range(coordinates[[y]]), 
+                              bins = 100,
+                              bw = 'bcv',
+                              custom = NULL,
+                              rel_threshold = 0, # remove densities below this relative threshold (0 - 1)
+                              abs_threshold = 0) { # remove densities below this absolute threshold 
+  
+  coord_df <- tibble(x = coordinates[[x]],
+                     y = coordinates[[y]])
+  
+  # bandwidth selector, or manually provide custom bandwidths for x and y
+  if(bw == 'custom') {
+    bw.x <- custom[1]
+    bw.y <- custom[2]
+  } else if(bw == 'bcv') {
+    bw.x <- bw.bcv(coord_df$x)
+    bw.y <- bw.bcv(coord_df$y)
+  } else if(bw == 'ucv') {
+    bw.x <- bw.ucv(coord_df$x)
+    bw.y <- bw.ucv(coord_df$y)
+  } else if (bw == 'SJ') {
+    bw.x <- bw.SJ(coord_df$x)
+    bw.y <- bw.SJ(coord_df$y)
+  } else if (bw == 'nrd0') {
+    bw.x <- bw.nrd0(coord_df$x)
+    bw.y <- bw.nrd0(coord_df$y)
+  } else {
+    bw.x <- bw.nrd(coord_df$x)
+    bw.y <- bw.nrd(coord_df$y)
+  }
+  
+  density_computation <- KernSmooth::bkde2D(as.matrix(coord_df),
+                                            bandwidth = c(bw.x, bw.y),
+                                            gridsize = c(bins, bins),
+                                            range.x = list(xlims, ylims))
+  
+  names(density_computation) <- c('x', 'y', 'z')
+  density_table <- crossing(x = density_computation$x,
+                            y = density_computation$y) %>% 
+    arrange(y, x) %>% 
+    mutate(z = as.numeric(density_computation$z),
+           z_scaled = z/max(z), # scale values between 0 and 1
+           z_norm = z/norm(z, '2')) %>% # unit vector normalization
+    mutate(z_norm = ifelse(z_scaled < rel_threshold, 0, z_norm), # threshold on densities above relative threshold
+           z_norm = ifelse(z_norm < abs_threshold, 0, z_norm)) # threshold on densities above absolute threshold
+  
+  density_table
+} 
+
+#' Plot normalized density
+#'
+#' @param input 
+#' @param x 
+#' @param y 
+#' @param xlims 
+#' @param ylims 
+#' @param group 
+#' @param target 
+#' @param background 
+#' @param bins 
+#' @param bw 
+#' @param custom 
+#' @param expansion 
+#' @param plot 
+#' @param rel_threshold 
+#' @param abs_threshold 
+#' @param downsample_points 
+#' @param point_alpha 
+#' @param point_size 
+#' @param point_color 
+#' @param clip_zeros 
+#' @param colors 
+#' @param background_color 
+#' @param borders 
+#' @param table_only 
+#'
+#' @export
+#'
+
+density_plot <- function(input,
+                         x = 'UMAP_1',
+                         y = 'UMAP_2',
+                         xlims = NULL, 
+                         ylims = NULL,
+                         group = NULL,
+                         target = NULL, 
+                         background = NULL,
+                         bins = 100, 
+                         bw = 'custom', 
+                         custom = NULL,
+                         expansion = 0.05,
+                         plot = TRUE,
+                         rel_threshold = 0, # remove densities below this relative threshold (0 - 1)
+                         abs_threshold = 0, # remove densities below this absolute threshold
+                         downsample_points = 1, # if plotting points, downsample to this fraction for computational efficiency
+                         point_alpha = 0.1, 
+                         point_size = 0.1,
+                         point_color = 'grey90',
+                         clip_zeros = TRUE, # in background normalization, clip densities below 0
+                         colors = 'custom1',
+                         background_color = 'transparent',
+                         borders = TRUE,
+                         table_only = FALSE) {
+  
+  # Determine input format
+  suppressWarnings(
+    if(class(input) == 'Seurat') {
+      coordinates <- FetchData(input, vars = c(x, y, group)) %>% as_tibble()
+    } else {
+      coordinates <- input %>% select(any_of(c(x, y, group)))
+    })
+  
+  # Set column names
+  colnames(coordinates) <- c('x', 'y', 'group')
+  
+  # Set limits
+  if(is.null(xlims)) {
+    xlims = range(coordinates$x)
+  }
+  
+  if(is.null(ylims)) {
+    ylims = range(coordinates$y)
+  }
+  
+  if(is.null(target)) { 
+    coordinates_subset <- coordinates # use all cells if null
+  } else {
+    coordinates_subset <- coordinates %>% filter(group %in% target) 
+  }
+  
+  # expand x and y limits if desired
+  xlims <- xlims %>% range() %>% scales::expand_range(mul = expansion) 
+  ylims <- ylims %>% range() %>% scales::expand_range(mul = expansion) 
+  
+  if(bw == 'custom' & is.null(custom)) {
+    custom <-  c(bw.bcv(coordinates$x) * 8,
+                 bw.bcv(coordinates$y) * 8)
+  }
+  
+  if(is.null(group)) {
+    
+    density_all <- density_calculate(coordinates,
+                                     x = 'x',
+                                     y = 'y',
+                                     bins = bins,
+                                     xlims = xlims,
+                                     ylims = ylims,
+                                     bw = bw,
+                                     custom = custom,
+                                     rel_threshold = rel_threshold,
+                                     abs_threshold = abs_threshold) 
+    
+  } else {
+    
+    # target density 
+    density_target <- density_calculate(coordinates_subset,
+                                        x = 'x',
+                                        y = 'y',
+                                        bins = bins,
+                                        xlims = xlims,
+                                        ylims = ylims,
+                                        bw = bw,
+                                        custom = custom) 
+    
+    # background
+    if(!is.null(background)) {
+      
+      #  background
+      coordinates_background <- coordinates %>% filter(group %in% background)
+      
+      density_background <- density_calculate(coordinates_background,
+                                              x = 'x',
+                                              y = 'y',
+                                              bins = bins,
+                                              xlims = xlims,
+                                              ylims = ylims,
+                                              bw = bw,
+                                              custom = custom)
+      
+      # background subtraction
+      density_subtraction <- density_target %>% 
+        mutate(z_diff = z_norm - density_background$z_norm,
+               z_scaled = z_diff/max(z_diff),
+               z_diff = ifelse(z_scaled < rel_threshold, 0, z_diff),
+               z_diff = ifelse(z_diff < abs_threshold, 0, z_diff))
+      
+      # set negative density differences to zero
+      if(clip_zeros) {
+        density_subtraction <- density_subtraction %>% 
+          mutate(z_diff = ifelse(z_diff < 0, 0, z_diff),
+                 z_diff = ifelse(z_diff < abs_threshold, 0, z_diff),
+                 z_diff_scaled = z_diff / max(z_diff))
+      }
+    } 
+  }
+  
+  # set up plotting parameters
+  
+  if(length(colors) == 1) {
+    colors <- case_when(
+      colors == 'custom1' ~ rev(RColorBrewer::brewer.pal(n = 11, name = "RdYlBu"))[7:11],
+      colors == 'custom2' ~ viridis::viridis(n = 5)
+    )
+  }
+  
+  if(!is.null(background_color)) {
+    colors <- c(background_color, colors) 
+  }
+  
+  color_scale <- colorRampPalette(colors)(bins) # color scale 
+  coordinates_downsample <- coordinates %>% sample_frac(downsample_points) # downsampled points
+  
+  plot_layers <- list(geom_point(inherit.aes = F,
+                                 data = coordinates_downsample, 
+                                 aes(x = x, y = y),
+                                 alpha = point_alpha,
+                                 color = point_color,
+                                 size = point_size),
+                      geom_contour_filled(bins = bins, aes(alpha = ..level..)),
+                      xlim(xlims),
+                      ylim(ylims),
+                      scale_fill_manual(values = color_scale),
+                      theme_minimal(),
+                      theme(axis.text = element_blank(),
+                            axis.ticks = element_blank(),
+                            axis.line = element_blank(),
+                            plot.title = element_text(face = 'plain', family = 'Arial', size = 10, hjust = 0.5),
+                            panel.grid = element_blank(),
+                            legend.position = 'none',
+                            axis.title = element_blank()))
+  
+  if(borders) {
+    theme_border <- theme(plot.background = element_rect(fill = NA, color = 'black', size = 0.5))  
+  }
+  
+  
+  if(!is.null(background)) {
+    
+    p_output <- density_subtraction %>% 
+      ggplot(aes(x = x, 
+                 y = y, 
+                 z = z_diff)) +
+      plot_layers 
+    
+  } else {
+    
+    p_output <- density_all %>% 
+      ggplot(aes(x = x, 
+                 y = y, 
+                 z = z_norm)) +
+      plot_layers 
+    
+  }
+  
+  if(borders) {
+    p_output <- p_output + theme_border
+  }
+  
+  
+  if(table_only) {
+    density_subtraction
+  } else {
+    p_output
+  }
+}

@@ -5,18 +5,20 @@
 \title{Statsplot}
 \usage{
 seurat_statsplot(
-  seurat_obj,
+  seuratobj,
   x = "nCount_RNA",
   y = "nFeature_RNA",
   marginal.type = "density",
   size = 0.5,
   alpha = 0.05,
-  title = seurat_obj@project.name,
+  title = seuratobj@project.name,
   cells = NULL,
   logx = FALSE,
   logy = FALSE,
   vline = NULL,
   hline = NULL,
+  xlab = NULL,
+  ylab = NULL,
   median_lines = FALSE,
   xlim = "auto",
   ylim = "auto",
@@ -24,7 +26,7 @@ seurat_statsplot(
 )
 }
 \arguments{
-\item{seurat_obj}{}
+\item{seuratobj}{}
 
 \item{x}{}
 

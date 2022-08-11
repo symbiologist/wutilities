@@ -5,8 +5,8 @@
 \title{Feature plot}
 \usage{
 seurat_feature(
-  seurat_obj,
-  features = "identity",
+  seuratobj,
+  features = "seurat_clusters",
   cells = NULL,
   facets = NULL,
   nrow = NULL,
@@ -31,11 +31,12 @@ seurat_feature(
   facet_background = "dodgerblue4",
   facet_color = "white",
   facet_size = 10,
+  facet_hide = FALSE,
   verbose = TRUE
 )
 }
 \arguments{
-\item{seurat_obj}{}
+\item{seuratobj}{}
 
 \item{features}{}
 
