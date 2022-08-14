@@ -144,6 +144,7 @@ seurat_statsplot <- function(seuratobj,
 #' @param scaled 
 #' @param label 
 #' @param label_color 
+#' @param axis_title_position
 #' @param legend_position 
 #' @param legend_size 
 #' @param facet_background 
@@ -175,6 +176,7 @@ seurat_feature <- function(seuratobj,
                            scaled = FALSE, 
                            label = TRUE,
                            label_color = c('white', 'black'),
+                           axis_title_position = 0,
                            legend_position = 'auto',
                            legend_size = 10,
                            facet_background = 'dodgerblue4',
@@ -348,6 +350,7 @@ seurat_feature <- function(seuratobj,
     theme(plot.background = element_rect(fill = 'white', color = NA),
           panel.grid = element_blank(),
           axis.text = element_blank(),
+          axis.title = element_text(hjust = axis_title_position),
           legend.title = element_blank(),
           legend.text = element_text(size = legend_size)) 
   
