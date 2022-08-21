@@ -156,7 +156,7 @@ seurat_statsplot <- function(seuratobj,
 #' @export
 #' @import tidyverse
 seurat_feature <- function(seuratobj, 
-                           features = 'seurat_clusters', 
+                           features = 'ident', 
                            cells = NULL,
                            facets = NULL,
                            nrow = NULL,
