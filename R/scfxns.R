@@ -591,7 +591,7 @@ density_plot <- function(input,
                                         custom = custom) 
     
     # background
-    if(!is.null(group)) {
+    if(!is.null(background)) {
       
       #  background
       if(background == 'all') {
@@ -667,7 +667,7 @@ density_plot <- function(input,
   }
   
   
-  if(!is.null(background)) {
+  if(!is.null(group)) {
     
     p_output <- density_subtraction %>% 
       ggplot(aes(x = x, 
