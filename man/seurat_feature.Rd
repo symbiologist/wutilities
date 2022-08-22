@@ -6,7 +6,7 @@
 \usage{
 seurat_feature(
   seuratobj,
-  features = "seurat_clusters",
+  features = "ident",
   cells = NULL,
   facets = NULL,
   nrow = NULL,

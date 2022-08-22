@@ -512,7 +512,7 @@ density_plot <- function(input,
                          ylims = NULL,
                          group = NULL,
                          target = NULL, 
-                         background = NULL,
+                         background = 'all',
                          bins = 100, 
                          bw = 'custom', 
                          custom = NULL,
@@ -594,7 +594,16 @@ density_plot <- function(input,
     if(!is.null(background)) {
       
       #  background
-      coordinates_background <- coordinates %>% filter(group %in% background)
+      
+      
+      if(background == 'all') {
+        
+        coordinates_background <- coordinates
+        
+      } else {
+        coordinates_background <- coordinates %>% filter(group %in% background)
+      }
+      
       
       density_background <- density_calculate(coordinates_background,
                                               x = 'x',

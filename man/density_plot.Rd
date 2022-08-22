@@ -12,7 +12,7 @@ density_plot(
   ylims = NULL,
   group = NULL,
   target = NULL,
-  background = NULL,
+  background = "all",
   bins = 100,
   bw = "custom",
   custom = NULL,
