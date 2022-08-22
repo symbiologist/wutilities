@@ -591,15 +591,11 @@ density_plot <- function(input,
                                         custom = custom) 
     
     # background
-    if(!is.null(background)) {
+    if(!is.null(group)) {
       
       #  background
-      
-      
       if(background == 'all') {
-        
         coordinates_background <- coordinates
-        
       } else {
         coordinates_background <- coordinates %>% filter(group %in% background)
       }
