@@ -186,13 +186,16 @@ seurat_feature <- function(seuratobj,
                            verbose = TRUE) {
   
   # coordinates
-  plot_input <- Seurat::Embeddings(seuratobj, reduction = reduction)[,dims] %>% as.data.frame() %>% rownames_to_column() %>% as_tibble()
+  if(!is.null(cells)) {
+    seuratobj <- subset(seuratobj, cells = cells)
+  }
+  
+  plot_input <- Seurat::Embeddings(seuratobj, reduction = reduction, )[,dims] %>% as.data.frame() %>% rownames_to_column() %>% as_tibble()
   colnames(plot_input) <- c('rowname', 'dim1', 'dim2')
   
   # Obtain features and facets
   fetched_table <- Seurat::FetchData(object = seuratobj, 
-                                     vars = c(features, setdiff(facets, 'auto')),
-                                     cells = cells) 
+                                     vars = c(features, setdiff(facets, 'auto'))) 
   
   # Determine continuity of variables
   if(continuous == 'auto') {
