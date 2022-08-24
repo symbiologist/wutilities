@@ -190,7 +190,7 @@ seurat_feature <- function(seuratobj,
     seuratobj <- Seurat::subset(seuratobj, cells = cells)
   }
   
-  plot_input <- Seurat::Embeddings(seuratobj, reduction = reduction, )[,dims] %>% as.data.frame() %>% rownames_to_column() %>% as_tibble()
+  plot_input <- Seurat::Embeddings(seuratobj, reduction = reduction)[,dims] %>% as.data.frame() %>% rownames_to_column() %>% as_tibble()
   colnames(plot_input) <- c('rowname', 'dim1', 'dim2')
   
   # Obtain features and facets
