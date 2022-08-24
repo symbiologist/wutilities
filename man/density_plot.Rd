@@ -20,6 +20,7 @@ density_plot(
   plot = TRUE,
   rel_threshold = 0,
   abs_threshold = 0,
+  downsample_data = 1,
   downsample_points = 1,
   point_alpha = 0.1,
   point_size = 0.1,

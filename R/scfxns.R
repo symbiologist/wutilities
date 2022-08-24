@@ -492,6 +492,7 @@ density_calculate <- function(coordinates,
 #' @param plot 
 #' @param rel_threshold 
 #' @param abs_threshold 
+#' @param downsample_data
 #' @param downsample_points 
 #' @param point_alpha 
 #' @param point_size 
@@ -520,6 +521,7 @@ density_plot <- function(input,
                          plot = TRUE,
                          rel_threshold = 0, # remove densities below this relative threshold (0 - 1)
                          abs_threshold = 0, # remove densities below this absolute threshold
+                         downsample_data = 1, # downsampling all data for computational efficiency
                          downsample_points = 1, # if plotting points, downsample to this fraction for computational efficiency
                          point_alpha = 0.1, 
                          point_size = 0.1,
@@ -548,6 +550,12 @@ density_plot <- function(input,
   
   if(is.null(ylims)) {
     ylims = range(coordinates$y)
+  }
+  
+  if(downsample_data < 1) {
+    coordinates <- coordinates %>% dplyr::sample_frac(size = downsample_data)
+  } else if (downsample_data > 1) {
+    coordinates <- coordinates %>% dplyr::sample_n(size = downsample_data)
   }
   
   if(is.null(target)) { 
