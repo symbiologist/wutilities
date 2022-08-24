@@ -187,7 +187,7 @@ seurat_feature <- function(seuratobj,
   
   # coordinates
   if(!is.null(cells)) {
-    seuratobj <- Seurat::subset(seuratobj, cells = cells)
+    seuratobj <- subset(seuratobj, cells = cells)
   }
   
   plot_input <- Seurat::Embeddings(seuratobj, reduction = reduction)[,dims] %>% as.data.frame() %>% rownames_to_column() %>% as_tibble()
