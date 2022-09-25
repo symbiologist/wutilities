@@ -93,7 +93,10 @@ enrichment_test <- function(list1, # list of positives in category 1
 #' @return
 #' @export
 #'
-apply_filters <- function(input, filters) {
+#'
+apply_filters <- function(input, 
+                          filters # list(column = c(value1, value2))
+                          ) {
   
   filter_vars <- names(filters)
   
