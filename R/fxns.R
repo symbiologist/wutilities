@@ -84,3 +84,30 @@ enrichment_test <- function(list1, # list of positives in category 1
        'chisq' = chisq,
        'fisher' = fisher)
 }
+
+#' Title
+#'
+#' @param input 
+#' @param filters 
+#'
+#' @return
+#' @export
+#'
+apply_filters <- function(input, filters) {
+  
+  filter_vars <- names(filters)
+  
+  if(all(filter_vars %in% colnames(input))) {
+    print2('All variables present in input table')
+  } else {
+    missing_var <- setdiff(filter_vars, colnames(input))
+    print2('Missing variables! Please check input for these variables: ', missing_var)
+    stop()
+  }
+  
+  index_to_retain <- map(filter_vars, function(i) {
+    input[[i]] %in% filters[[i]]
+  }) %>% Reduce("&", .)
+  
+  input[index_to_retain, ]
+}
