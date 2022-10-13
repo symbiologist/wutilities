@@ -176,6 +176,7 @@ seurat_feature <- function(seuratobj,
                            scaled = FALSE, 
                            label = TRUE,
                            label_color = c('white', 'black'),
+                           drop_points = FALSE,
                            axis_title_position = 0,
                            legend_position = 'auto',
                            legend_size = 10,
@@ -344,8 +345,6 @@ seurat_feature <- function(seuratobj,
               aes(x = dim1,
                   y = dim2,
                   color = value)) +
-    geom_point(size = size, 
-               alpha = alpha) +
     facet_wrap(reformulate(facets), nrow = nrow) +
     theme_minimal() +
     labs(x = xlabel,
@@ -357,6 +356,11 @@ seurat_feature <- function(seuratobj,
           axis.title = element_text(hjust = axis_title_position),
           legend.title = element_blank(),
           legend.text = element_text(size = legend_size)) 
+  
+  if(!drop_points) {
+    p <- p + geom_point(size = size, 
+                        alpha = alpha)
+  }
   
   if(!continuous & label) {
     centers <- plot_input %>% dplyr::group_by(value) %>% dplyr::summarize(x = median(dim1), y = median(dim2))
