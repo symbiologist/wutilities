@@ -7,9 +7,10 @@
 theme_publication(
   base_size = 12,
   base_family = "Arial",
-  axis = T,
-  grid = F,
-  legend.position = "none"
+  axis = TRUE,
+  grid = FALSE,
+  legend.position = "none",
+  rotate_text = "none"
 )
 }
 \arguments{

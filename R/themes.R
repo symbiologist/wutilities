@@ -10,9 +10,10 @@
 #'
 theme_publication <- function(base_size = 12, 
                               base_family = 'Arial', 
-                              axis = T, 
-                              grid = F, 
-                              legend.position = 'none') {
+                              axis = TRUE, 
+                              grid = FALSE, 
+                              legend.position = 'none',
+                              rotate_text = 'none') {
   
   if(axis) {
     axis_element <- element_line(color = 'black')
@@ -26,6 +27,12 @@ theme_publication <- function(base_size = 12,
     grid_element <- element_blank()
   }
   
+  if(rotate_text == 'x') {
+    x_axis_text <- element_text(angle = 90, hjust = 1)
+  } else {
+    x_axis_text <- element_text()
+  }
+  
   ggthemes::theme_foundation(base_size = base_size, base_family = base_family) + 
     theme(plot.title = element_text(face = "plain", size = 14, hjust = 0.5),
           text = element_text(),
@@ -36,6 +43,7 @@ theme_publication <- function(base_size = 12,
           axis.title.y = element_text(angle = 90, vjust = 0.5),
           axis.title.x = element_text(vjust = 0),
           axis.text = element_text(color = 'black'),
+          axis.text.x = x_axis_text,
           axis.line = axis_element,
           panel.grid.major = grid_element,
           panel.grid.minor = element_blank(),
@@ -112,4 +120,20 @@ theme_dwu <- function(base_size = 12,
           legend.position = legend.position,
           strip.background = element_rect(color = facet_border, fill = facet_background),
           strip.text = element_text(face = "plain", color = facet_color))
+}
+
+#' Title
+#'
+#' @param palette 
+#'
+#' @export
+#'
+#' @examples
+color_palette2 <- function(palette = 1) {
+  
+  if(palette == 1 | palette == 'RdBu') {
+    colors <- RColorBrewer::brewer.pal(n = 11, name = 'RdBu')[c(3,9)]
+  }
+  
+  colors
 }
