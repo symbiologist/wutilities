@@ -4,7 +4,11 @@
 \alias{apply_filters}
 \title{Title}
 \usage{
-apply_filters(input, filters)
+apply_filters(
+  input,
+  filters = list(column = c("value1", "value2")),
+  verbose = FALSE
+)
 }
 \arguments{
 \item{input}{}

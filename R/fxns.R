@@ -94,13 +94,15 @@ enrichment_test <- function(list1, # list of positives in category 1
 #'
 #'
 apply_filters <- function(input, 
-                          filters # list(column = c(value1, value2))
-                          ) {
+                          filters = list('column' = c('value1', 'value2')),
+                          verbose = FALSE) {
   
   filter_vars <- names(filters)
   
   if(all(filter_vars %in% colnames(input))) {
-    print2('All variables present in input table')
+    if(verbose) {
+      print2('All variables present in input table') 
+    }
   } else {
     missing_var <- setdiff(filter_vars, colnames(input))
     print2('Missing variables! Please check input for these variables: ', missing_var)
