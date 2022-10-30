@@ -89,7 +89,7 @@ enrichment_test <- function(list1, # list of positives in category 1
 #'
 #' @param input 
 #' @param filters 
-#'
+#' @param verbose
 #' @export
 #'
 #'
