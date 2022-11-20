@@ -10,7 +10,8 @@ enrichment_test(
   cat1 = c(TRUE, FALSE),
   cat2 = c(TRUE, FALSE),
   background,
-  print = TRUE
+  print = TRUE,
+  method = "fisher"
 )
 }
 \arguments{
