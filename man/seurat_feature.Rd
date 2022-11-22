@@ -26,6 +26,7 @@ seurat_feature(
   scaled = FALSE,
   label = TRUE,
   label_color = c("white", "black"),
+  label_size = 5,
   drop_points = FALSE,
   axis_title_position = 0,
   legend_position = "auto",

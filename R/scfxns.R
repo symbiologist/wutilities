@@ -176,6 +176,7 @@ seurat_feature <- function(seuratobj,
                            scaled = FALSE, 
                            label = TRUE,
                            label_color = c('white', 'black'),
+                           label_size = 5,
                            drop_points = FALSE,
                            axis_title_position = 0,
                            legend_position = 'auto',
@@ -299,7 +300,11 @@ seurat_feature <- function(seuratobj,
     if (color_package == 'generate') {
       color_palette <- generate_colors(n = n_colors, palette = color_palette)
     } else if (color_package == 'carto') {
-      color_palette <- rcartocolor::carto_pal(n = n_colors, name = color_palette)
+      if(n_colors > 12) {
+        color_palette <- rep(rcartocolor::carto_pal(n = 12, name = color_palette), ceiling(n_colors/12))
+      } else {
+        color_palette <- rcartocolor::carto_pal(n = n_colors, name = color_palette)
+      }
     } 
   }
   
@@ -331,10 +336,10 @@ seurat_feature <- function(seuratobj,
   n_cells <- ncol(seuratobj)
   
   if(alpha == 'auto') {
-    alpha <- 30/sqrt(n_cells)
+    alpha <- max(30/sqrt(n_cells), 0.2)
   }
   if(size == 'auto') {
-    size <- 20/sqrt(n_cells)
+    size <- max(20/sqrt(n_cells), 0.05)
   }
   if(verbose) {
     print2('Plotting with alpha ', round(alpha, 2), ' and size ', round(size, 2))
@@ -352,7 +357,7 @@ seurat_feature <- function(seuratobj,
     theme(plot.background = element_rect(fill = 'white', color = NA),
           panel.grid = element_blank(),
           text = element_text(family = 'Arial'),
-          plot.title = element_blank(hjust = 0.5),
+          plot.title = element_text(hjust = 0.5),
           axis.text = element_blank(),
           axis.title = element_text(hjust = axis_title_position),
           legend.title = element_blank(),
@@ -365,7 +370,13 @@ seurat_feature <- function(seuratobj,
   
   if(!continuous & label) {
     centers <- plot_input %>% dplyr::group_by(value) %>% dplyr::summarize(x = median(dim1), y = median(dim2))
-    p <- p + shadowtext::geom_shadowtext(data = centers, aes(x = x, y = y, label = value), color = label_color[1], size = 5, bg.color = label_color[2])
+    p <- p + ggrepel::geom_text_repel(data = centers, 
+                                      aes(x = x, y = y, label = value), 
+                                      size = label_size, 
+                                      color = label_color[1], 
+                                      bg.color = label_color[2],
+                                      max.overlaps = Inf,
+                                      point.size = NA)
   }
   
   if(borders) {
