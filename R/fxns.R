@@ -220,7 +220,7 @@ odds_table <- function(df,
                  total = n_total,
                  clean = TRUE)) %>% 
     ungroup() %>% 
-    mutate(across(starts_with('f_'), round, 3)) %>% 
+    mutate(across(c(starts_with('f_'), jaccard, overlap_coef), round, 3)) %>% 
     as_tibble()
 }
 ### sankey
