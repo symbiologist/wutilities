@@ -185,6 +185,10 @@ seurat_feature <- function(seuratobj,
                            facet_color = 'white',
                            facet_size = 10,
                            facet_hide = FALSE,
+                           rasterize = 'auto',
+                           rasterize_scale = 0.75,
+                           rasterize_dpi = 300,
+                           rasterize_threshold = 1e4,
                            verbose = TRUE) {
   
   # coordinates
@@ -363,7 +367,25 @@ seurat_feature <- function(seuratobj,
           legend.title = element_blank(),
           legend.text = element_text(size = legend_size)) 
   
-  if(!drop_points) {
+
+  # rasterize points if greater than rasterize threshold
+  if(rasterize == 'auto') {
+    if(n_cells > rasterize_threshold) {
+      rasterize <- TRUE
+    } else {
+      rasterize <- FALSE
+    }
+  } 
+  
+  if(drop_points) {
+    # do not add points
+  } else if(rasterize) {
+    p <- p + 
+      ggrastr::rasterize(geom_point(size = size, 
+                                    alpha = alpha), 
+                         dpi = rasterize_dpi, 
+                         scale = rasterize_scale)
+  } else {
     p <- p + geom_point(size = size, 
                         alpha = alpha)
   }
