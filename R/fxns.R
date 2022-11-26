@@ -10,6 +10,18 @@ print2 <- function(...) {
 
 #' Title
 #'
+#' @param colors 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+view_colors <- function(colors) {
+  barplot(rep(1, length(colors)), col = colors, names.arg = colors)
+}
+
+#' Title
+#'
 #' @param n 
 #' @param palette 
 #' @param ... 

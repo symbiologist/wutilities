@@ -35,6 +35,10 @@ seurat_feature(
   facet_color = "white",
   facet_size = 10,
   facet_hide = FALSE,
+  rasterize = "auto",
+  rasterize_scale = 0.75,
+  rasterize_dpi = 300,
+  rasterize_threshold = 10000,
   verbose = TRUE
 )
 }
