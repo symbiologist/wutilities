@@ -315,20 +315,10 @@ plot_sankey1 <- function(df,
                   node = node, 
                   next_node = next_node,
                   fill = node,
-                  color = node,
-                  label = node)) 
-  
-  if(reverse) {
-    p <- p + geom_sankey(flow.alpha = 0.6,
-                         node.color = 'black') +
-      scale_color_viridis_d() 
-  } else {
-    p <- p + geom_sankey(flow.alpha = 0.6,
-                         flow.color = 'black',
-                         node.color = 'black')
-  }
-  
-  p + 
+                  label = node)) +
+    geom_sankey(flow.alpha = 0.6,
+                flow.color = 'black',
+                node.color = 'black') +
     theme_sankey(base_size = 10, base_family = 'Arial') +
     theme(legend.position = 'none',
           plot.title = element_text(hjust = 0.5),
@@ -434,9 +424,9 @@ plot_sankey2 <- function(df,
              node = node, 
              next_node = next_node,
              fill = node,
-             color = node,
              label = node)) +
     geom_sankey(flow.alpha = 0.6,
+                flow.color = 'black',
                 node.color = 'black') +
     theme_sankey(base_size = 10, base_family = 'Arial') +
     theme(legend.position = 'none',
@@ -445,7 +435,6 @@ plot_sankey2 <- function(df,
           axis.text.x = element_text(size = 10, color = 'black'))+
     geom_sankey_label(size = 3, color = "black", fill = "white", family = 'Arial') + 
     scale_fill_viridis_d() + 
-    scale_color_viridis_d() + 
     labs(x = '',
          title = title,
          subtitle = total)
