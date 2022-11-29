@@ -235,4 +235,218 @@ odds_table <- function(df,
     mutate(across(c(starts_with('f_'), jaccard, overlap_coef), round, 3)) %>% 
     as_tibble()
 }
+
 ### sankey
+#' Title
+#'
+#' @param df 
+#' @param nodes 
+#' @param names 
+#' @param reverse 
+#' @param top_n 
+#' @param percentages 
+#' @param total 
+#' @param prefix 
+#' @param title 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plot_sankey1 <- function(df,
+                         nodes,
+                         names = NULL,
+                         reverse = TRUE,
+                         top_n = 3, # only applicable for single category breakdown
+                         percentages = TRUE,
+                         total = TRUE,
+                         prefix = 'Interactions:',
+                         title = NULL) {
+  
+  sankey_input <- df %>% select(all_of(nodes))
+  
+  if(!is.null(names)) {
+    colnames(sankey_input) <- names
+  }
+  
+  if(!is.null(top_n) | percentages) {
+    
+    sankey_input <- sankey_input %>% 
+      add_count(across(all_of(names))) %>% 
+      mutate(pct = round(100 * n/nrow(.), 1))
+    
+  }
+  
+  if(!is.null(top_n)) {
+    top_categories <- sankey_input %>% unique() %>% arrange(-pct) %>% mutate(row = row_number())
+    
+    bottom_pct <- top_categories %>% 
+      filter(row > top_n) %>% 
+      pull(pct) %>% 
+      sum()
+    
+    sankey_input <- sankey_input %>% 
+      left_join(top_categories %>% select(-n)) %>% 
+      mutate(pct = ifelse(row > top_n, bottom_pct, pct),
+             '{names[2]}' := ifelse(row > top_n, 'Other', .[[names[2]]]))
+    
+  }
+  
+  if(percentages) {
+    sankey_input <- sankey_input %>% mutate('{names[2]}' := paste0(.[[names[2]]], ', ', pct, '%')) 
+  }
+  
+  if(total) {
+    total <- paste(prefix, nrow(df))
+  } else {
+    total <- NULL
+  }
+  
+  if(reverse) {
+    sankey_input <- sankey_input %>% make_long(2:1)
+  } else {
+    sankey_input <- sankey_input %>% make_long(1:2)
+  }
+  
+  # Construct plot
+  p <- ggplot(sankey_input, 
+              aes(x = x, 
+                  next_x = next_x, 
+                  node = node, 
+                  next_node = next_node,
+                  fill = node,
+                  color = node,
+                  label = node)) 
+  
+  if(reverse) {
+    p <- p + geom_sankey(flow.alpha = 0.6,
+                         node.color = 'black') +
+      scale_color_viridis_d() 
+  } else {
+    p <- p + geom_sankey(flow.alpha = 0.6,
+                         flow.color = 'black',
+                         node.color = 'black')
+  }
+  
+  p + 
+    theme_sankey(base_size = 10, base_family = 'Arial') +
+    theme(legend.position = 'none',
+          plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5),
+          axis.text.x = element_text(size = 10, color = 'black'))+
+    geom_sankey_label(size = 3, color = "black", fill = "white", family = 'Arial') + 
+    scale_fill_viridis_d() + 
+    labs(x = '',
+         title = title,
+         subtitle = total)
+  
+}
+
+#' Title
+#'
+#' @param df 
+#' @param nodes 
+#' @param names 
+#' @param top_n 
+#' @param percentages 
+#' @param total 
+#' @param prefix 
+#' @param title 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plot_sankey2 <- function(df,
+                         nodes,
+                         names = NULL,
+                         top_n = 3, # only applicable for single category breakdown
+                         percentages = TRUE,
+                         total = TRUE,
+                         prefix = 'Interactions:',
+                         title = NULL)
+{
+  
+  sankey_input <- df %>% select(all_of(nodes))
+  
+  if(!is.null(names)) {
+    colnames(sankey_input) <- names
+  }
+  
+  if(!is.null(top_n)) {
+    
+    sankey_input_left <- sankey_input %>% 
+      select(all_of(names[-3])) %>% 
+      group_by_all() %>% 
+      tally() %>% 
+      ungroup() %>% 
+      mutate(pct = round(100 * n/nrow(sankey_input), 1))
+    
+    sankey_input_right <- sankey_input %>% 
+      select(all_of(names[-1])) %>% 
+      group_by_all() %>% 
+      tally() %>% 
+      ungroup() %>% 
+      mutate(pct = round(100 * n/nrow(sankey_input), 1)) 
+    
+  }
+  
+  if(!is.null(top_n)) {
+    
+    top_categories_left <- sankey_input_left %>% unique() %>% arrange(-pct) %>% mutate(row = row_number())
+    
+    bottom_pct_left <- top_categories_left %>% 
+      filter(row > top_n) %>% 
+      pull(pct) %>% 
+      sum()
+    
+    top_categories_right <- sankey_input_right %>% unique() %>% arrange(-pct) %>% mutate(row = row_number())
+    
+    bottom_pct_right <- top_categories_right %>% 
+      filter(row > top_n) %>% 
+      pull(pct) %>% 
+      sum()
+    
+    sankey_input <- sankey_input %>% 
+      left_join(top_categories_left %>% select(-n)) %>% 
+      mutate(pct = ifelse(row > top_n, bottom_pct_left, pct),
+             '{names[1]}' := ifelse(row > top_n, 'Other', .[[names[1]]])) %>% 
+      mutate('{names[1]}' := paste0(.[[names[1]]], ', ', pct, '%')) %>% 
+      select(-row, -pct) %>% 
+      left_join(top_categories_right %>% select(-n)) %>% 
+      mutate(pct = ifelse(row > top_n, bottom_pct_right, pct),
+             '{names[3]}' := ifelse(row > top_n, 'Other', .[[names[3]]])) %>% 
+      mutate('{names[3]}' := paste0(.[[names[3]]], ', ', pct, '%')) %>% 
+      select(-row, -pct)
+    
+  }
+  
+  if(total) {
+    total <- paste(prefix, nrow(df))
+  } else {
+    total <- NULL
+  }
+  
+  # Construct plot
+  ggplot(sankey_input %>% make_long(1:3), 
+         aes(x = x, 
+             next_x = next_x, 
+             node = node, 
+             next_node = next_node,
+             fill = node,
+             color = node,
+             label = node)) +
+    geom_sankey(flow.alpha = 0.6,
+                node.color = 'black') +
+    theme_sankey(base_size = 10, base_family = 'Arial') +
+    theme(legend.position = 'none',
+          plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5),
+          axis.text.x = element_text(size = 10, color = 'black'))+
+    geom_sankey_label(size = 3, color = "black", fill = "white", family = 'Arial') + 
+    scale_fill_viridis_d() + 
+    scale_color_viridis_d() + 
+    labs(x = '',
+         title = title,
+         subtitle = total)
+}
