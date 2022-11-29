@@ -263,9 +263,11 @@ plot_sankey1 <- function(df,
                          prefix = 'Interactions:',
                          title = NULL) {
   
-  sankey_input <- df %>% select(all_of(nodes))
+  sankey_input <- df %>% select(all_of(nodes)) %>% mutate(across(.fns = as.character))
   
-  if(!is.null(names)) {
+  if(is.null(names)) {
+    names <- nodes
+  } else {
     colnames(sankey_input) <- names
   }
   
@@ -288,13 +290,18 @@ plot_sankey1 <- function(df,
     sankey_input <- sankey_input %>% 
       left_join(top_categories %>% select(-n)) %>% 
       mutate(pct = ifelse(row > top_n, bottom_pct, pct),
-             '{names[2]}' := ifelse(row > top_n, 'Other', .[[names[2]]]))
+             '{names[2]}' := ifelse(row > top_n, 'Other', .[[names[2]]])) %>% 
+      arrange(pct)
     
   }
   
   if(percentages) {
     sankey_input <- sankey_input %>% mutate('{names[2]}' := paste0(.[[names[2]]], ', ', pct, '%')) 
   }
+  
+  plot_order <- map(names, function(i) {
+    unique(sankey_input[[i]])
+  }) %>% unlist() %>% unique()
   
   if(total) {
     total <- paste(prefix, nrow(df))
@@ -308,8 +315,9 @@ plot_sankey1 <- function(df,
     sankey_input <- sankey_input %>% make_long(1:2)
   }
   
+  
   # Construct plot
-  p <- ggplot(sankey_input, 
+  p <- ggplot(sankey_input %>% mutate(node = factor(node, levels = plot_order)), 
               aes(x = x, 
                   next_x = next_x, 
                   node = node, 
@@ -357,9 +365,11 @@ plot_sankey2 <- function(df,
                          title = NULL)
 {
   
-  sankey_input <- df %>% select(all_of(nodes))
+  sankey_input <- df %>% select(all_of(nodes)) %>% mutate(across(.fns = as.character))
   
-  if(!is.null(names)) {
+  if(is.null(names)) {
+    names <- nodes
+  } else {
     colnames(sankey_input) <- names
   }
   
@@ -402,12 +412,18 @@ plot_sankey2 <- function(df,
       mutate(pct = ifelse(row > top_n, bottom_pct_left, pct),
              '{names[1]}' := ifelse(row > top_n, 'Other', .[[names[1]]])) %>% 
       mutate('{names[1]}' := paste0(.[[names[1]]], ', ', pct, '%')) %>% 
+      arrange(pct) %>% 
       select(-row, -pct) %>% 
       left_join(top_categories_right %>% select(-n)) %>% 
       mutate(pct = ifelse(row > top_n, bottom_pct_right, pct),
              '{names[3]}' := ifelse(row > top_n, 'Other', .[[names[3]]])) %>% 
       mutate('{names[3]}' := paste0(.[[names[3]]], ', ', pct, '%')) %>% 
-      select(-row, -pct)
+      select(-row, -pct) 
+    
+    # plot_order <- map(1:ncol(sankey_input), function(i) {
+    #   unique(sankey_input[[i]])
+    # }) %>% unlist()
+    
     
   }
   
