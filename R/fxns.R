@@ -464,3 +464,21 @@ plot_sankey2 <- function(df,
          title = title,
          subtitle = total)
 }
+
+
+#' Title
+#'
+#' @param group1 
+#' @param group2 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+calculate_agreement <- function(group1,
+                                group2) {
+  
+  tibble('AMI' = aricode::AMI(group1, group2),
+         'ARI' = aricode::ARI(group1, group2))
+  
+}
