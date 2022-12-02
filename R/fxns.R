@@ -261,9 +261,14 @@ plot_sankey1 <- function(df,
                          percentages = TRUE,
                          total = TRUE,
                          prefix = 'Interactions:',
-                         title = NULL) {
+                         title = NULL,
+                         drop_na = FALSE) {
   
   sankey_input <- df %>% select(all_of(nodes)) %>% mutate(across(.fns = as.character))
+  
+  if(drop_na) {
+    sankey_input <- sankey_input %>% drop_na()
+  }
   
   if(is.null(names)) {
     names <- nodes
@@ -362,8 +367,12 @@ plot_sankey2 <- function(df,
                          percentages = TRUE,
                          total = TRUE,
                          prefix = 'Interactions:',
-                         title = NULL)
+                         title = NULL,
+                         drop_na = FALSE)
 {
+  if(drop_na) {
+    sankey_input <- sankey_input %>% drop_na()
+  }
   
   sankey_input <- df %>% select(all_of(nodes)) %>% mutate(across(.fns = as.character))
   

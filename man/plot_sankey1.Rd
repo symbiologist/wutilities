@@ -13,7 +13,8 @@ plot_sankey1(
   percentages = TRUE,
   total = TRUE,
   prefix = "Interactions:",
-  title = NULL
+  title = NULL,
+  drop_na = FALSE
 )
 }
 \arguments{
