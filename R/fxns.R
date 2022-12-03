@@ -236,6 +236,81 @@ odds_table <- function(df,
     as_tibble()
 }
 
+#' Title
+#'
+#' @param df 
+#' @param nodes 
+#' @param names 
+#' @param reverse 
+#' @param total 
+#' @param prefix 
+#' @param arrange 
+#' @param title 
+#' @param drop_na 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plot_sankey <- function(df,
+                        nodes,
+                        names = NULL,
+                        reverse = TRUE,
+                        total = TRUE,
+                        prefix = 'Interactions:',
+                        arrange = 1,
+                        title = NULL,
+                        drop_na = FALSE) {
+  
+  sankey_input <- df %>% select(all_of(nodes)) %>% mutate(across(.fns = as.character)) %>% arrange(across(nodes[arrange]))
+  
+  if(drop_na) {
+    sankey_input <- sankey_input %>% drop_na()
+  }
+  
+  if(is.null(names)) {
+    names <- nodes
+  } else {
+    colnames(sankey_input) <- names
+  }
+  
+  if(reverse) {
+    sankey_input <- sankey_input %>% make_long(length(nodes):1)
+  } else {
+    sankey_input <- sankey_input %>% make_long(1:length(nodes))
+  }
+  
+  
+  if(total) {
+    total <- paste(prefix, nrow(df))
+  } else {
+    total <- NULL
+  }
+  
+  # Construct plot
+  p <- ggplot(sankey_input %>% mutate(node = factor(node)), 
+              aes(x = x, 
+                  next_x = next_x, 
+                  node = node, 
+                  next_node = next_node,
+                  fill = node,
+                  label = node)) +
+    geom_sankey(flow.alpha = 0.6,
+                flow.color = 'black',
+                node.color = 'black') +
+    theme_sankey(base_size = 10, base_family = 'Arial') +
+    theme(legend.position = 'none',
+          plot.title = element_text(hjust = 0.5),
+          plot.subtitle = element_text(hjust = 0.5),
+          axis.text.x = element_text(size = 10, color = 'black'))+
+    geom_sankey_label(size = 3, color = "black", fill = "white", family = 'Arial') + 
+    scale_fill_viridis_d() + 
+    labs(x = '',
+         title = title,
+         subtitle = total)
+  
+}
+
 ### sankey
 #' Title
 #'
