@@ -337,7 +337,8 @@ plot_sankey1 <- function(df,
                          total = TRUE,
                          prefix = 'Interactions:',
                          title = NULL,
-                         drop_na = FALSE) {
+                         drop_na = FALSE,
+                         ordered = FALSE) {
   
   sankey_input <- df %>% select(all_of(nodes)) %>% mutate(across(.fns = as.character))
   
@@ -370,8 +371,12 @@ plot_sankey1 <- function(df,
     sankey_input <- sankey_input %>% 
       left_join(top_categories %>% select(-n)) %>% 
       mutate(pct = ifelse(row > top_n, bottom_pct, pct),
-             '{names[2]}' := ifelse(row > top_n, 'Other', .[[names[2]]])) %>% 
-      arrange(pct)
+             '{names[2]}' := ifelse(row > top_n, 'Other', .[[names[2]]])) 
+    
+    if(ordered) {
+      
+      sankey_input <- sankey_input %>% arrange(pct)
+    }
     
   }
   
