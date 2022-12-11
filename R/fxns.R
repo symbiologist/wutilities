@@ -562,3 +562,39 @@ calculate_agreement <- function(group1,
          'ARI' = aricode::ARI(group1, group2))
   
 }
+
+#' Title
+#'
+#' @param input_matrix 
+#' @param rows 
+#' @param cols 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+aggregate_matrix <- function(input_matrix,
+                             rows = NULL,
+                             cols = NULL) {
+  
+  library(data.table)
+  input_matrix <- as.matrix(input_matrix)
+  
+  if(!is.null(rows)) {
+    d <- data.table(row = rows, 
+                    input_matrix)  
+    
+    output <- as.matrix(d[, lapply(.SD, sum), by = row], rownames = 'row')
+    
+  } else if(!is.null(cols)) {
+    
+    d <- data.table(row = cols, 
+                    t(input_matrix))  
+    
+    output <- t(as.matrix(d[, lapply(.SD, sum), by = row], rownames = 'row'))
+    
+  }
+  
+  return(output)
+  
+}

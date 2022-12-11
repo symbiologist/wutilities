@@ -14,7 +14,8 @@ plot_sankey1(
   total = TRUE,
   prefix = "Interactions:",
   title = NULL,
-  drop_na = FALSE
+  drop_na = FALSE,
+  ordered = FALSE
 )
 }
 \arguments{
@@ -35,6 +36,9 @@ plot_sankey1(
 \item{prefix}{}
 
 \item{title}{}
+}
+\value{
+
 }
 \description{
 Title

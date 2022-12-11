@@ -17,6 +17,9 @@ odds_quick(group1, group2, overlap, total, clean = TRUE)
 
 \item{clean}{}
 }
+\value{
+
+}
 \description{
 Title
 }

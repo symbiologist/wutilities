@@ -13,6 +13,9 @@ odds_table(df, group1, group2)
 
 \item{group2}{}
 }
+\value{
+
+}
 \description{
 Title
 }
