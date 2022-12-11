@@ -584,14 +584,14 @@ aggregate_matrix <- function(input_matrix,
     d <- data.table(row = rows, 
                     input_matrix)  
     
-    output <- as.matrix(d[, lapply(.SD, sum), by = row], rownames = 'row')
+    output <- as.matrix(d[, lapply(.SD, sum), by = 'row'], rownames = 'row')
     
   } else if(!is.null(cols)) {
     
     d <- data.table(row = cols, 
                     t(input_matrix))  
     
-    output <- t(as.matrix(d[, lapply(.SD, sum), by = row], rownames = 'row'))
+    output <- t(as.matrix(d[, lapply(.SD, sum), by = 'row'], rownames = 'row'))
     
   }
   
