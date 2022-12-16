@@ -598,3 +598,12 @@ aggregate_matrix <- function(input_matrix,
   return(output)
   
 }
+
+venn <- function(named_list,
+                 colors = NULL) {
+  p <- plot(eulerr::euler(list(
+    'IL17' = sharing_analysis %>% filter(Global.Annotation == 'IL17 Secreting') %>% pull(tcr) %>% unique(),
+    'Treg' = sharing_analysis %>% filter(Global.Annotation == 'CD4 Treg') %>% pull(tcr) %>% unique())),
+    quantities = TRUE,
+    fill = c('dodgerblue4', 'orangered'), alpha = 0.5)
+}
