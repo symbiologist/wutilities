@@ -784,9 +784,9 @@ extract_expression <- function(seuratobj,
                  values_to = 'counts')
   
   if(total) {
-    total_count <- colSums(Seurat::GetAssayData(seuratobj, 
-                                                slot = slot, 
-                                                assay = assay))  
+    total_count <- Matrix::colSums(Seurat::GetAssayData(seuratobj, 
+                                                        slot = slot, 
+                                                        assay = assay))  
     if(!is.null(cells)) {
       total_count <- total_count[cells]
     }
