@@ -872,7 +872,7 @@ pseudobulk_matrix <- function(seuratobj,
                               group_by = 'ident') {
   
   metadata_groups <- FetchData(seuratobj, vars = group_by, cells = cells) 
-  metadata_groups$identifier <- apply( metadata_groups[ , group_by ] , 1 , paste , collapse = ':')
+  metadata_groups$identifier <- apply(metadata_groups[ , group_by ] , 1 , paste , collapse = ':')
   
   if(is.null(cells)) {
     cells <- colnames(seuratobj)
@@ -880,7 +880,7 @@ pseudobulk_matrix <- function(seuratobj,
   
   # Ensure identical cell ordering
   metadata_groups <- metadata_groups[cells, ]
-  expression_matrix <- t(seuratobj@assays$RNA@counts[, cells])
+  expression_matrix <- Matrix::t(seuratobj@assays$RNA@counts[, cells])
   aggregated_matrix <- sapply(by(expression_matrix, metadata_groups$identifier, colSums), identity)
   
   # slower for unknown reason:
