@@ -773,20 +773,20 @@ extract_expression <- function(seuratobj,
                                assay = 'RNA',
                                slot = 'counts') {
   
-  data_subset <- FetchData(object = seuratobj, 
-                           cells = cells,
-                           vars = genes,
-                           assay = assay,
-                           slot = slot) %>% 
+  data_subset <- Seurat::FetchData(object = seuratobj, 
+                                   cells = cells,
+                                   vars = genes,
+                                   assay = assay,
+                                   slot = slot) %>% 
     rownames_to_column() %>% 
     pivot_longer(cols = -rowname,
                  names_to = 'gene',
                  values_to = 'counts')
   
   if(total) {
-    total_count <- colSums(GetAssayData(seuratobj, 
-                                        slot = slot, 
-                                        assay = assay))  
+    total_count <- colSums(Seurat::GetAssayData(seuratobj, 
+                                                slot = slot, 
+                                                assay = assay))  
     if(!is.null(cells)) {
       total_count <- total_count[cells]
     }
