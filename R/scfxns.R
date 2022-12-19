@@ -291,8 +291,13 @@ seurat_feature <- function(seuratobj,
     # discrete colors
     n_colors <- dplyr::n_distinct(plot_input$value)
     
-    if(n_colors > 12 & color_palette == 1) {
+    if(n_colors > 20 & color_palette == 1) {
       color_package <- 'ggplot'
+    }
+    
+    if(n_colors > 12 & color_palette == 1) {
+      color_package <- 'ggthemes'
+      color_palette <- 'Tableau 20'
     }
     
     if (color_package == 'custom' & length(color_palette) == 1) {
@@ -309,6 +314,8 @@ seurat_feature <- function(seuratobj,
       } else {
         color_palette <- rcartocolor::carto_pal(n = n_colors, name = color_palette)
       }
+    } else if (color_package == 'ggthemes') {
+      color_palette <- ggthemes::tableau_color_pal(palette = color_palette)(n_colors)
     } 
   }
   
