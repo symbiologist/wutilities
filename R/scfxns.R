@@ -181,6 +181,7 @@ seurat_feature <- function(seuratobj,
                            axis_title_position = 0,
                            legend_position = 'auto',
                            legend_size = 10,
+                           legend_keysize = 4,
                            facet_background = 'dodgerblue4',
                            facet_color = 'white',
                            facet_size = 10,
@@ -372,7 +373,8 @@ seurat_feature <- function(seuratobj,
           axis.text = element_blank(),
           axis.title = element_text(hjust = axis_title_position),
           legend.title = element_blank(),
-          legend.text = element_text(size = legend_size)) 
+          legend.text = element_text(size = legend_size),
+          legend.key.size = unit(legend_keysize, 'mm')) 
   
 
   # rasterize points if greater than rasterize threshold
