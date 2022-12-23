@@ -9,9 +9,6 @@ view_colors(colors)
 \arguments{
 \item{colors}{}
 }
-\value{
-
-}
 \description{
 Title
 }

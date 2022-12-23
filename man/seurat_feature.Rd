@@ -31,6 +31,7 @@ seurat_feature(
   axis_title_position = 0,
   legend_position = "auto",
   legend_size = 10,
+  legend_keysize = 4,
   facet_background = "dodgerblue4",
   facet_color = "white",
   facet_size = 10,

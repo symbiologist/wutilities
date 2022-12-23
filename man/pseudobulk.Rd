@@ -32,9 +32,6 @@ pseudobulk(
 
 \item{slot}{}
 }
-\value{
-
-}
 \description{
 Title
 }

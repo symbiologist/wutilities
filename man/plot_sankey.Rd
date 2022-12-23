@@ -35,9 +35,6 @@ plot_sankey(
 
 \item{drop_na}{}
 }
-\value{
-
-}
 \description{
 Title
 }

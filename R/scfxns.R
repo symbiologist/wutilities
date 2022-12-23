@@ -835,34 +835,34 @@ pseudobulk <- function(seuratobj,
                        pseudocount = 1,
                        rounding = 3,
                        assay = 'RNA',
-                       slot = 'count') {
+                       slot = 'count')
+{
+  metadata_groups <- Seurat::FetchData(seuratobj, vars = c(group_by, 'nCount_RNA'), cells = cells) 
+  metadata_groups$identifier <- apply(metadata_groups[ , group_by ] , 1 , paste , collapse = ':')
   
-  metadata_groups <- FetchData(seuratobj, vars = group_by, cells = cells) %>% rownames_to_column()
+  total_counts <- metadata_groups %>% 
+    dplyr::group_by(across(all_of(c(group_by, 'identifier')))) %>% 
+    dplyr::summarize(total = sum(nCount_RNA))
   
-  expression <- extract_expression(seuratobj,
-                                   genes = genes,
-                                   cells = cells,
-                                   normalize = FALSE,
-                                   log = FALSE,
-                                   assay = assay,
-                                   slot = slot) %>% 
-    left_join(metadata_groups, by = 'rowname')
+  if(is.null(cells)) {
+    cells <- colnames(seuratobj)
+  }
   
-  totals <- expression %>% 
-    select(rowname, total, all_of(group_by)) %>% 
-    unique() %>% 
-    group_by(across(all_of(group_by))) %>% 
-    summarize(total = sum(total))
+  # Ensure identical cell ordering
+  metadata_groups <- metadata_groups[cells, ]
+  expression_matrix <- Matrix::t(seuratobj@assays$RNA@counts[genes, cells])
+  aggregated_matrix <- sapply(by(expression_matrix, metadata_groups$identifier, colSums), identity)
   
-  merged <- expression %>% 
-    group_by(across(all_of(c('gene', group_by)))) %>% 
-    summarize(counts = sum(counts)) %>% 
-    ungroup() %>% 
-    left_join(totals) %>% 
-    mutate(cpm = counts/total * 1e6,
-           log10cpm = log10(cpm + pseudocount))
-  
-  merged %>% mutate(across(contains('cpm'), round, rounding))
+  aggregated_matrix %>% 
+    as.data.frame() %>% 
+    rownames_to_column('gene') %>% 
+    tidyr::pivot_longer(cols = -gene,
+                        names_to = 'identifier',
+                        values_to = 'counts') %>% 
+    dplyr::left_join(total_counts) %>% 
+    dplyr::mutate(cpm = round(counts / total * 1e6, rounding),
+                  log10cpm = round(log10(cpm + pseudocount), rounding)) %>% 
+    dplyr::select(gene, all_of(group_by), counts, total, cpm, log10cpm)
   
 }
 

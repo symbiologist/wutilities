@@ -13,9 +13,6 @@ pseudobulk_matrix(seuratobj, cells = NULL, group_by = "ident")
 
 \item{group_by}{}
 }
-\value{
-
-}
 \description{
 Title
 }

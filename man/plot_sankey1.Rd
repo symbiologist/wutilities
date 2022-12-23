@@ -37,9 +37,6 @@ plot_sankey1(
 
 \item{title}{}
 }
-\value{
-
-}
 \description{
 Title
 }

@@ -11,9 +11,6 @@ calculate_agreement(group1, group2)
 
 \item{group2}{}
 }
-\value{
-
-}
 \description{
 Title
 }

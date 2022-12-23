@@ -13,9 +13,6 @@ aggregate_matrix(input_matrix, rows = NULL, cols = NULL)
 
 \item{cols}{}
 }
-\value{
-
-}
 \description{
 Title
 }

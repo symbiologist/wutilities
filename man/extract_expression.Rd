@@ -32,9 +32,6 @@ extract_expression(
 
 \item{slot}{}
 }
-\value{
-
-}
 \description{
 Title
 }
