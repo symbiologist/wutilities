@@ -838,7 +838,12 @@ pseudobulk <- function(seuratobj,
                        slot = 'count')
 {
   metadata_groups <- Seurat::FetchData(seuratobj, vars = c(group_by, 'nCount_RNA'), cells = cells) 
-  metadata_groups$identifier <- apply(metadata_groups[ , group_by ] , 1 , paste , collapse = ':')
+  
+  if(length(group_by) == 1) {
+    metadata_groups$identifier <- metadata_groups[[group_by]]
+  } else {
+    metadata_groups$identifier <- apply(metadata_groups[ , group_by ] , 1 , paste , collapse = ':')  
+  }
   
   total_counts <- metadata_groups %>% 
     dplyr::group_by(across(all_of(c(group_by, 'identifier')))) %>% 
@@ -881,7 +886,12 @@ pseudobulk_matrix <- function(seuratobj,
                               group_by = 'ident') {
   
   metadata_groups <- FetchData(seuratobj, vars = group_by, cells = cells) 
-  metadata_groups$identifier <- apply(metadata_groups[ , group_by ] , 1 , paste , collapse = ':')
+  if(length(group_by) == 1) {
+    metadata_groups$identifier <- metadata_groups[[group_by]]
+  } else {
+    metadata_groups$identifier <- apply(metadata_groups[ , group_by ] , 1 , paste , collapse = ':')  
+  }
+  
   
   if(is.null(cells)) {
     cells <- colnames(seuratobj)
