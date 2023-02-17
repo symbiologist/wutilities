@@ -77,9 +77,9 @@ theme_dwu <- function(base_size = 12,
                       axis = TRUE, 
                       grid = FALSE, 
                       legend.position = 'none',
-                      facet_background = 'grey80',
+                      facet_background = 'dodgerblue4',
                       facet_border = 'black',
-                      facet_color = 'black') {
+                      facet_color = 'white') {
   if(border) {
     border_element <- element_rect(color = 'black', fill = NA)
   } else {
