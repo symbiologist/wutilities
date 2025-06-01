@@ -660,3 +660,44 @@ venn <- function(named_list,
     quantities = TRUE,
     fill = c('dodgerblue4', 'orangered'), alpha = 0.5)
 }
+
+#' Title
+#'
+#' @param plot 
+#' @param path 
+#' @param h 
+#' @param w 
+#' @param filename 
+#' @param dpi 
+#' @param device 
+#' @param ... 
+#'
+#' @returns
+#' @export
+#'
+#' @examples
+ggsave2 <- function(plot,
+                    path = here('output/plots'),
+                    h = 4,
+                    w = 6,
+                    filename,
+                    dpi = 150,
+                    device = cairo_pdf,
+                    ...) {
+  
+  ggsave(plot = plot,
+         path = path,
+         h = h,
+         w = w,
+         filename = paste0(filename, '.pdf'),
+         device = device,
+         ...)
+  
+  ggsave(plot = plot,
+         path = path,
+         h = h,
+         w = w,
+         filename = paste0(filename, '.png'),
+         dpi = dpi,
+         ...)
+}
