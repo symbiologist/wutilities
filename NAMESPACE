@@ -2,6 +2,7 @@
 
 export(.ls.objects)
 export(aggregate_matrix)
+export(append_googlesheet)
 export(apply_filters)
 export(calculate_agreement)
 export(color_palette2)

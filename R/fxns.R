@@ -701,3 +701,70 @@ ggsave2 <- function(plot,
          dpi = dpi,
          ...)
 }
+
+### Google Drive append function
+#' Title
+#'
+#' @param new_data 
+#' @param ss 
+#' @param sheet 
+#' @param all_character 
+#' @param ignore_cols 
+#'
+#' @returns
+#' @export
+#'
+#' @examples
+append_googlesheet <- function(new_data, 
+                               ss, 
+                               sheet, 
+                               all_character = FALSE, 
+                               ignore_cols = NULL) {
+  
+  existing_sheets <- sheet_names(ss = ss)
+  
+  # 1. Check if the target sheet exists
+  if (sheet %in% existing_sheets) {
+    
+    message(paste("Sheet '", sheet, "' already exists. Checking for new rows to append.", sep = ""))
+    
+    # 2. Read the data from the existing sheet
+    existing_data <- read_sheet(ss = ss, sheet = sheet)
+    
+    # Convert everything to character if requested
+    if(all_character) {
+      new_data <- new_data %>% mutate(across(everything(), as.character))
+      existing_data <- existing_data %>% mutate(across(everything(), as.character))
+    }
+    
+    # 3. Identify rows in new_data that are not in existing_data
+    
+    # Define the columns to use for matching
+    # By default, this is all columns. If ignore_cols is specified,
+    # those columns are removed from the matching criteria.
+    join_cols <- setdiff(names(existing_data), ignore_cols)
+    
+    # Give a message about which columns are being ignored
+    if (!is.null(ignore_cols)) {
+      message(paste("Ignoring the following columns for matching:", paste(ignore_cols, collapse = ", ")))
+    }
+    
+    # Perform the anti_join using the specified columns
+    rows_to_add <- anti_join(new_data, existing_data, by = join_cols)
+    
+    # 4. Append only the new, unique rows
+    if (nrow(rows_to_add) > 0) {
+      message(paste("Appending", nrow(rows_to_add), "new rows."))
+      sheet_append(ss = ss, data = rows_to_add, sheet = sheet)
+    } else {
+      message("No new rows to add.")
+    }
+    
+  } else {
+    
+    message(paste("Sheet '", sheet, "' does not exist. Creating it now.", sep = ""))
+    
+    # 5. If the sheet doesn't exist, write all the new data to it
+    write_sheet(new_data, ss = ss, sheet = sheet)
+  }
+}

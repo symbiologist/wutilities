@@ -8,7 +8,7 @@
 #'
 #' @export
 #'
-theme_publication <- function(base_size = 12, 
+theme_publication <- function(base_size = 16, 
                               base_family = 'Arial', 
                               axis = TRUE, 
                               grid = FALSE, 
@@ -34,15 +34,15 @@ theme_publication <- function(base_size = 12,
   }
   
   ggthemes::theme_foundation(base_size = base_size, base_family = base_family) + 
-    theme(plot.title = element_text(face = "plain", size = 14, hjust = 0.5),
+    theme(plot.title = element_text(face = "plain", hjust = 0.5),
           text = element_text(),
           panel.background = element_rect(color = NA),
           plot.background = element_rect(color = NA),
           panel.border = element_blank(),
-          axis.title = element_text(face = "plain", size = rel(1)),
+          axis.title = element_text(face = "plain"),
           axis.title.y = element_text(angle = 90, vjust = 0.5),
           axis.title.x = element_text(vjust = 0),
-          axis.text = element_text(color = 'black'),
+          axis.text = element_text(color = 'black', size = rel(0.9)),
           axis.text.x = x_axis_text,
           axis.line = axis_element,
           panel.grid.major = grid_element,

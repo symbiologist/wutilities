@@ -5,7 +5,7 @@
 \title{Theme for publication}
 \usage{
 theme_publication(
-  base_size = 12,
+  base_size = 16,
   base_family = "Arial",
   axis = TRUE,
   grid = FALSE,
