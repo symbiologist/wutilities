@@ -670,6 +670,7 @@ venn <- function(named_list,
 #' @param filename 
 #' @param dpi 
 #' @param device 
+#' @param type 
 #' @param ... 
 #'
 #' @returns
@@ -683,23 +684,30 @@ ggsave2 <- function(plot,
                     filename,
                     dpi = 150,
                     device = cairo_pdf,
+                    type = c('png', 'pdf'),
                     ...) {
   
-  ggsave(plot = plot,
-         path = path,
-         h = h,
-         w = w,
-         filename = paste0(filename, '.pdf'),
-         device = device,
-         ...)
+  if('pdf' %in% type) {
+    
+    ggsave(plot = plot,
+           path = path,
+           h = h,
+           w = w,
+           filename = paste0(filename, '.pdf'),
+           device = device,
+           ...)
+  }
+
+  if('png' %in% type) {
+    ggsave(plot = plot,
+           path = path,
+           h = h,
+           w = w,
+           filename = paste0(filename, '.png'),
+           dpi = dpi,
+           ...)
+  }
   
-  ggsave(plot = plot,
-         path = path,
-         h = h,
-         w = w,
-         filename = paste0(filename, '.png'),
-         dpi = dpi,
-         ...)
 }
 
 ### Google Drive append function

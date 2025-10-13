@@ -12,6 +12,7 @@ ggsave2(
   filename,
   dpi = 150,
   device = cairo_pdf,
+  type = c("png", "pdf"),
   ...
 )
 }
